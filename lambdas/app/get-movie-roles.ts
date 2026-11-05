@@ -2,6 +2,7 @@ import type { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { QueryCommand } from "@aws-sdk/lib-dynamodb";
 import {
   ddb,
+  isMovieItem,
   isRoleItem,
   movieKey,
   parseId,
@@ -36,6 +37,9 @@ export const handler = async (
     );
 
     const resultItems = queryResult.Items ?? [];
+    if (!resultItems.some(isMovieItem)) {
+      return response(404, { message: `Movie ${movieId} not found` });
+    }
     return response(200, { data: resultItems.filter(isRoleItem).map(toRole).filter((role) => actorId === undefined || role.actorId === actorId) });
   } catch (err) {
     console.error("DynamoDB error:", err);
