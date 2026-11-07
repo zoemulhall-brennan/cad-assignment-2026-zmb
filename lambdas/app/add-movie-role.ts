@@ -9,6 +9,16 @@ export const handler = async (
   const body = parseJsonObject(event);
   if (isResponse(body)) return body;
 
+  const invalidText = ["roleName", "roleDescription"].filter((f) => typeof body[f] !== "string" || body[f] === "");
+  if (invalidText.length) {
+    return response(400, { message: `Missing or invalid fields: ${invalidText.join(", ")}` });
+  }
+
+  const invalidIds = ["movieId", "actorId"].filter((f) => typeof body[f] !== "number" || !Number.isInteger(body[f]) || (body[f] as number) <= 0);
+  if (invalidIds.length) {
+    return response(400, { message: `Missing or invalid fields: ${invalidIds.join(", ")}` });
+  }
+
   const role: Role = {
     movieId: body.movieId as number,
     actorId: body.actorId as number,
