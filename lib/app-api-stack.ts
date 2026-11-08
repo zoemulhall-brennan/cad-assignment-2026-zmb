@@ -107,5 +107,20 @@ export class AppApiStack extends cdk.Stack {
       .addResource('actors')
       .addResource('{actorID}')
       .addMethod('GET', new apig.LambdaIntegration(getActorFn), userAuth);
+
+    // API Key for Admin (the usage plan pattern from the AWS CDK API Gateway docs)
+    const plan = api.addUsagePlan('AdminUsagePlan', {
+      name: 'AdminPlan',
+      throttle: {
+        rateLimit: 10,
+        burstLimit: 2,
+      },
+    });
+
+    const key = api.addApiKey('AdminApiKey');
+    plan.addApiKey(key);
+
+    plan.addApiStage({ stage: api.deploymentStage });
   }
 }
+
