@@ -32,7 +32,6 @@ export const handler = async (
         TableName: tableName,
         KeyConditionExpression: "PK = :pk",
         ExpressionAttributeValues: { ":pk": movieKey(movieId) },
-        // ExclusiveStartKey: lastKey,
       })
     );
 
@@ -40,7 +39,12 @@ export const handler = async (
     if (!resultItems.some(isMovieItem)) {
       return response(404, { message: `Movie ${movieId} not found` });
     }
-    return response(200, { data: resultItems.filter(isRoleItem).map(toRole).filter((role) => actorId === undefined || role.actorId === actorId) });
+    return response(200, {
+      data: resultItems
+        .filter(isRoleItem)
+        .map(toRole)
+        .filter((role) => actorId === undefined || role.actorId === actorId),
+    });
   } catch (err) {
     console.error("DynamoDB error:", err);
     return response(500, { message: "Internal server error" });

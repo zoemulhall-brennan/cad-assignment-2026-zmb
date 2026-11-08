@@ -12,12 +12,14 @@ export const handler = async (
   const body = parseJsonObject(event);
   if (isResponse(body)) return body;
 
-  const invalidText = ["roleName", "roleDescription"].filter((f) => typeof body[f] !== "string" || body[f] === "");
+  const invalidText = ["roleName", "roleDescription"]
+    .filter((f) => typeof body[f] !== "string" || body[f] === "");
   if (invalidText.length) {
     return response(400, { message: `Missing or invalid fields: ${invalidText.join(", ")}` });
   }
 
-  const invalidIds = ["movieId", "actorId"].filter((f) => typeof body[f] !== "number" || !Number.isInteger(body[f]) || (body[f] as number) <= 0);
+  const invalidIds = ["movieId", "actorId"]
+    .filter((f) => typeof body[f] !== "number" || !Number.isInteger(body[f]) || (body[f] as number) <= 0);
   if (invalidIds.length) {
     return response(400, { message: `Missing or invalid fields: ${invalidIds.join(", ")}` });
   }
@@ -64,7 +66,7 @@ export const handler = async (
   } catch (err) {
     const name = (err as Error).name;
     if (name === "TransactionCanceledException") {
-      return response(404, { message: `Movie ${role.movieId} or Actor ${role.actorId} not found` });
+      return response(404, { message: `Movie ${role.movieId} or actor ${role.actorId} not found` });
     }
     console.error("DynamoDB error:", err);
     return response(500, { message: "Internal server error" });
