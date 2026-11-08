@@ -59,6 +59,10 @@ export const handler = async (
     );
     return response(201, { message: "Role added", data: role });
   } catch (err) {
+    const name = (err as Error).name;
+    if (name === "TransactionCanceledException") {
+      return response(404, { message: `Movie ${role.movieId} or Actor ${role.actorId} not found` });
+    }
     console.error("DynamoDB error:", err);
     return response(500, {
       message: "Internal server error",
